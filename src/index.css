@@ -21,7 +21,7 @@
     }
 
     nav{
-        @apply bg-white mb-5 px-2 inline-block rounded-full fixed bottom-1 left-1/2 -translate-x-1/2;
+        @apply bg-white mb-2 px-2 inline-block rounded-full fixed bottom-1 left-1/2 -translate-x-1/2;
     }
 
     nav ul li{
