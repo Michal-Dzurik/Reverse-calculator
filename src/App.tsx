@@ -9,12 +9,14 @@ function App() {
   return (
     <>
         <Navigation />
-        <Routes>
-            <Route path="/" element={<About />} />
-            <Route path="/calculator" element={<Calculator />} />
-            <Route path="/404" element={<NotFound />} />
-            <Route path="*" element={<NotFound />} />
-        </Routes>
+        <div className='px-8 py-6 w-full'>
+            <Routes>
+                <Route path="/" element={<About />} />
+                <Route path="/calculator" element={<Calculator />} />
+                <Route path="/404" element={<NotFound />} />
+                <Route path="*" element={<NotFound />} />
+            </Routes>
+        </div>
     </>
   )
 }
