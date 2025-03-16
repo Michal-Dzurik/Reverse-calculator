@@ -1,6 +1,13 @@
 
 export const reverseCalculate = (result: number, maxOperands: number, maxPolynome: number, mode: string, complexity: string): string => {
-    if (mode == null || complexity == null || mode === '' || complexity === '') return '';
+    if (mode == null ||
+        complexity == null ||
+        mode === '' ||
+        complexity === '' ||
+        maxPolynome < 1 ||
+        maxOperands < 1 ||
+        maxPolynome >= 20 ||
+        maxOperands >= 20) return '';
     maxPolynome = Math.max(maxPolynome, result);
 
     let output = '';
