@@ -8,14 +8,16 @@ export default function Calculator() {
     const [complexity, setComplexity] = useState<string>('low');
     const [mode, setMode] = useState<string>('numbers');
 
-    const [number, setNumber] = useState<number|null>(null);
+    const [number, setNumber] = useState<number|null>(0);
     const [maxOperands, setMaxOperands] = useState<number|null>(5);
     const [maxPolynome, setMaxPolynome] = useState<number|null>(1);
+
+    const [output, setOutput] = useState<string>('');
 
     const handleOnSubmit = function (event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
-        console.log(reverseCalculate(number || 0,maxOperands || 2,maxPolynome || 1,mode,complexity));
+        setOutput(reverseCalculate(number || 0,maxOperands || 2,maxPolynome || 1,mode,complexity))
     }
 
     return (
@@ -52,6 +54,12 @@ export default function Calculator() {
                     setMaxOperands(e.target.value.trim() !== '' ? parseFloat(e.target.value) : null);
                 }}/>
                 <button type="submit">😋 Gimme that stuff!</button>
+
+                <article className=''>
+                    { output !== '' ? (
+                        output
+                    ) : ''}
+                </article>
             </form>
         </>
     );

@@ -9,7 +9,8 @@
     "module": "ES6",    // <-- This ensures ES6 modules
     "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "moduleResolution": "node"
   },
   "include": [
     "src/**/*.ts",
