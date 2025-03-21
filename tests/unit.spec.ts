@@ -3,6 +3,23 @@ import {formatNumber, getSign, hasDecimal, reverseCalculate} from "../src/untils
 import {evaluate} from "mathjs";
 
 // Helpers
+
+const randomComplexity = (): string => {
+    const random = Math.floor(Math.random() * 3);
+    if (random == 3) return 'high';
+    if (random == 2) return 'medium';
+
+    return 'low';
+}
+
+const randomPolynomes = (): number => {
+    return Math.floor(Math.random() * 19) + 1;
+}
+
+const randomBool = (): boolean => {
+    return Math.floor(Math.random() * 2) == 1;
+}
+
 describe("hasDecimal", () => {
     it("should decide if the number has decimal points", () => {
         expect(hasDecimal(1)).to.equal(false);
@@ -57,43 +74,74 @@ describe("formatNumber", () => {
 
 // Reverse calc
 describe("numbers only", () => {
+    it("should return nothing when getting DRY", () => {
+        const maxPolynome = randomPolynomes();
+        const mode = 'numbers';
+        const complexity = randomComplexity();
+        const fractions = true;
+        const roots = true;
+
+        expect(reverseCalculate(12,5,maxPolynome,'', complexity,fractions,roots)).to.equal('');
+        expect(reverseCalculate(12,5,maxPolynome,mode, '',fractions,roots)).to.equal('');
+
+        expect(reverseCalculate(12,5,-1,mode, complexity,fractions,roots )).to.equal('');
+        expect(reverseCalculate(12,-1,3,mode, complexity,fractions,roots )).to.equal('');
+
+        expect(reverseCalculate(12,5,0,mode, complexity,fractions,roots )).to.equal('');
+        expect(reverseCalculate(12,0,3,mode, complexity,fractions,roots )).to.equal('');
+
+        expect(reverseCalculate(12,5,1234536,mode, complexity,fractions,roots )).to.equal('');
+        expect(reverseCalculate(12,123456,3,mode, complexity,fractions,roots )).to.equal('');
+
+        expect(reverseCalculate(12,5,-1234536,mode, complexity,fractions,roots )).to.equal('');
+        expect(reverseCalculate(12,-123456,3,mode, complexity,fractions,roots )).to.equal('');
+    });
+
     it("should return equation equal to result", () => {
-        const randomComplexity = (): string => {
-            const random = Math.floor(Math.random() * 3);
-            if (random == 3) return 'high';
-            if (random == 2) return 'medium';
-
-            return 'low';
-        }
-
-        const maxPolynome = 1;
+        const maxPolynome = randomPolynomes();
         const mode = 'numbers';
 
         for (let i = 0; i < 50; i++) {
             const result = Math.floor(Math.random() * 100) * (Math.floor(Math.random() * 2) == 1 ? -1 : 1);
             const maxOperands = Math.floor(Math.random() * 9) + 1;
-            expect(evaluate(reverseCalculate(result,maxOperands,maxPolynome,mode, randomComplexity()))).to.equal(result);
+            expect(evaluate(reverseCalculate(result,maxOperands,maxPolynome,mode, randomComplexity(), randomBool(), randomBool()))).to.equal(result);
         }
     });
 
-    it("should return nothing when getting DRY", () => {
-        const maxPolynome = 1;
-        const mode = 'numbers';
-        const complexity = 'low';
-
-        expect(reverseCalculate(12,5,maxPolynome,'', complexity)).to.equal('');
-        expect(reverseCalculate(12,5,maxPolynome,mode, '')).to.equal('');
-
-        expect(reverseCalculate(12,5,-1,mode, complexity )).to.equal('');
-        expect(reverseCalculate(12,-1,3,mode, complexity )).to.equal('');
-
-        expect(reverseCalculate(12,5,0,mode, complexity )).to.equal('');
-        expect(reverseCalculate(12,0,3,mode, complexity )).to.equal('');
-
-        expect(reverseCalculate(12,5,1234536,mode, complexity )).to.equal('');
-        expect(reverseCalculate(12,123456,3,mode, complexity )).to.equal('');
-
-        expect(reverseCalculate(12,5,-1234536,mode, complexity )).to.equal('');
-        expect(reverseCalculate(12,-123456,3,mode, complexity )).to.equal('');
-    });
 });
+
+describe("with variables", () => {
+    it("should return nothing when getting DRY", () => {
+        const maxPolynome = randomPolynomes();
+        const mode = 'variables';
+        const complexity = randomComplexity();
+        const fractions = true;
+        const roots = true;
+
+        expect(reverseCalculate(12,5,maxPolynome,'', complexity,fractions,roots)).to.equal('');
+        expect(reverseCalculate(12,5,maxPolynome,mode, '',fractions,roots)).to.equal('');
+
+        expect(reverseCalculate(12,5,-1,mode, complexity,fractions,roots )).to.equal('');
+        expect(reverseCalculate(12,-1,3,mode, complexity,fractions,roots )).to.equal('');
+
+        expect(reverseCalculate(12,5,0,mode, complexity,fractions,roots )).to.equal('');
+        expect(reverseCalculate(12,0,3,mode, complexity,fractions,roots )).to.equal('');
+
+        expect(reverseCalculate(12,5,1234536,mode, complexity,fractions,roots )).to.equal('');
+        expect(reverseCalculate(12,123456,3,mode, complexity,fractions,roots )).to.equal('');
+
+        expect(reverseCalculate(12,5,-1234536,mode, complexity,fractions,roots )).to.equal('');
+        expect(reverseCalculate(12,-123456,3,mode, complexity,fractions,roots )).to.equal('');
+    });
+
+    it("should return equation equal to result", () => {
+        const maxPolynome = 1;
+        const mode = 'variables';
+
+        for (let i = 0; i < 50; i++) {
+            const result = Math.floor(Math.random() * 100) * (Math.floor(Math.random() * 2) == 1 ? -1 : 1);
+            const maxOperands = Math.floor(Math.random() * 9) + 1;
+            expect(evaluate(reverseCalculate(result,maxOperands,maxPolynome,mode, randomComplexity(), randomBool(), randomBool()),{x: result})).to.equal(0);
+        }
+    });
+})

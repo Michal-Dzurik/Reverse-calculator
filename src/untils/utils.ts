@@ -1,30 +1,33 @@
-// GCD (Greatest Common Divisor) == Najväčší spoločný deliteľ (NSD)
+import { evaluate, bignumber } from "mathjs";
+const BASE = 100;
+
 const getGCD = (a: number, b: number): number => {
     return b === 0 ? a : getGCD(b, a % b);
 };
 
-const getComplexityMultiplayer = (complexity:string):number =>{
-    return complexity === 'high' ? 4 : (complexity === 'medium' ? 2 : 1);
-}
+const getComplexityMultiplier = (complexity: string): number => {
+    return complexity === "high" ? 4 : complexity === "medium" ? 2 : 1;
+};
 
-const random = (min:number, max:number): number =>{
-    return Math.floor(Math.random() * max + min);
-}
+const random = (min: number, max: number): number => {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+};
 
-const binaryRandom = () =>{
+const binaryRandom = (): number => {
     return Math.floor(Math.random() * 2);
-}
+};
 
-export const hasDecimal = (numb: number): boolean =>{
+export const hasDecimal = (numb: number): boolean => {
     return !Number.isInteger(numb);
-}
+};
 
-export const getSign = (numb: number): string =>{
-    return (numb >= 0 ? '+' : '-');
-}
+export const getSign = (numb: number): string => {
+    return numb >= 0 ? "+" : "-";
+};
 
-export const formatNumber = (numb:number): string  =>{
-    if (!hasDecimal(numb)) return `${getSign(numb)}${Math.abs(numb)}`;
+export const formatNumber = (numb: number, divide?: number, ignoreFormatting?: boolean): string => {
+    if (!hasDecimal(numb) || ignoreFormatting || numb === 0) return `${getSign(numb)}${Math.abs(numb)}`;
+    if (divide != null) return `${getSign(numb)}${Math.abs(numb)}/${divide}`;
 
     const sign = getSign(numb);
     const absValue = Math.abs(numb);
@@ -40,44 +43,87 @@ export const formatNumber = (numb:number): string  =>{
     const gcd = getGCD(numerator, denominator);
 
     return `${sign}${numerator / gcd}/${denominator / gcd}`;
-}
+};
 
-export const reverseCalculate = (result: number, maxOperands: number, maxPolynome: number, mode: string, complexity: string): string => {
-    if (mode == null ||
-        complexity == null ||
-        mode === '' ||
-        complexity === '' ||
+export const reverseCalculate = (
+    result: number,
+    maxOperands: number,
+    maxPolynome: number,
+    mode: string,
+    complexity: string,
+    fractions: boolean,
+    roots: boolean
+): string => {
+    if (
+        !mode ||
+        !complexity ||
         maxPolynome < 1 ||
         maxOperands < 1 ||
         maxPolynome >= 20 ||
-        maxOperands >= 20) return '';
+        maxOperands >= 20
+    ) {
+        return "";
+    }
 
-    let output = '',
-        sum = 0;
+    let output = "0";
+    const multiplier = getComplexityMultiplier(complexity);
+    const operandNumber = random(1, maxOperands);
 
-    if (mode === 'numbers'){
-        const multiplier = getComplexityMultiplayer(complexity);
-        const operandNumber = random(1,maxOperands);
-
+    if (mode === "numbers") {
         for (let i = 0; i < operandNumber; i++) {
-            let numb = random(0,result * multiplier);
+            let numb = random(1, BASE * multiplier - 1);
 
-            if(complexity === 'high' && binaryRandom() === 1) {
-                const fraction = random(1,(result / 2) * multiplier);
-
-                sum += numb / fraction;
-                output += formatNumber(numb / fraction);
-
+            if (fractions && binaryRandom() === 1) {
+                const fraction = random(1, Math.max(1, (result / 2) * multiplier));
+                output += formatNumber(binaryRandom() ? -numb : numb, fraction);
                 continue;
             }
-            if(binaryRandom() === 1) numb = -numb;
 
-            sum += numb;
-            output += formatNumber(numb);
+            if (roots && binaryRandom() === 1) {
+                const rootExponent = random(2, 5 * multiplier - 2);
+                const randomExponent = random(1, 5 * multiplier - 1);
+                output += `${getSign(numb)}${numb}^(${randomExponent}/${rootExponent})`;
+                continue;
+            }
+
+            if (binaryRandom() === 1) numb = -numb;
+            output += formatNumber(numb, 0, true);
         }
 
-        const rest = (result - sum);
-        output += formatNumber(rest);
+        const rest = evaluate(`${output} - ${bignumber(result)}`);
+        output += formatNumber(-rest, 0, true);
+    }
+
+    if (mode === "variables") {
+        for (let i = 0; i < operandNumber; i++) {
+            let numb = random(1, BASE * multiplier - 1);
+            const polynome = random(1, maxPolynome + 1);
+
+            if (complexity === "high" && binaryRandom() === 1) {
+                const fraction = random(1, Math.max(1, (result / 2) * multiplier));
+                output += formatNumber(binaryRandom() ? -numb : numb, fraction) + `*x^${polynome}`;
+                continue;
+            }
+
+            if (roots && binaryRandom() === 1) {
+                const rootExponent = random(2, 5 * multiplier - 2);
+                const randomExponent = random(1, 5 * multiplier - 1);
+                output += `${getSign(numb)}${numb}x^(${randomExponent}/${rootExponent})`;
+                continue;
+            }
+
+            if (binaryRandom() === 1) numb = -numb;
+            output += formatNumber(numb) + `*x^${polynome}`;
+        }
+
+        try {
+            const rest = evaluate(output, { x: result });
+            if (!isFinite(rest) || isNaN(rest)) throw new Error("Invalid equation");
+            output += formatNumber(-rest, 0, true);
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (e) {
+            return reverseCalculate(result,maxOperands,maxOperands,mode,complexity,fractions,roots);
+        }
     }
 
     return output;

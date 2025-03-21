@@ -1,12 +1,15 @@
-import {ArrowUp01, Blend, Gauge, Puzzle, Sigma} from "lucide-react";
+import {ArrowUp01, Blend, Divide, Gauge, Puzzle, Radical, Sigma} from "lucide-react";
 import {FormEvent, useState} from "react";
 import Select from "../components/form/Select.tsx";
 import Input from "../components/form/Input.tsx";
 import {reverseCalculate} from "../untils/utils.ts";
+import Checkbox from "../components/form/Checkbox.tsx";
 
 export default function Calculator() {
     const [complexity, setComplexity] = useState<string>('low');
     const [mode, setMode] = useState<string>('numbers');
+    const [fractions, setFractions] = useState<boolean>(false);
+    const [roots, setRoots] = useState<boolean>(false);
 
     const [number, setNumber] = useState<number|null>(0);
     const [maxOperands, setMaxOperands] = useState<number|null>(5);
@@ -17,7 +20,7 @@ export default function Calculator() {
     const handleOnSubmit = function (event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
-        setOutput(reverseCalculate(number || 0,maxOperands || 2,maxPolynome || 1,mode,complexity))
+        setOutput(reverseCalculate(number || 0,maxOperands || 2,maxPolynome || 1,mode,complexity,fractions, roots))
     }
 
     return (
@@ -33,9 +36,17 @@ export default function Calculator() {
                     setMode(e.target.value);
                 }}>
                     <option selected disabled hidden>None</option>
-                    <option value='number'>Numbers only</option>
-                    <option value='variables'>With Variable</option>
+                    <option value='numbers'>Numbers only</option>
+                    <option value='variables'>Variables</option>
                 </Select>
+
+                <Checkbox label={'Fractions'} icon={<Divide/>} onChange={e => {
+                    setFractions(e.target.checked);
+                }} value={fractions}/>
+
+                <Checkbox label={'Roots'} icon={<Radical/>} onChange={e => {
+                    setRoots(e.target.checked);
+                }} value={roots}/>
 
                 <Select label='Complexity' icon={<Gauge/>} value={complexity} onChange={(e) => {
                     setComplexity(e.target.value);
