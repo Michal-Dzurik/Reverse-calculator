@@ -16,6 +16,8 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.482.0",
+    "mathjax-full": "^3.2.2",
+    "mathjax-react": "^2.0.1",
     "mathjs": "^14.3.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

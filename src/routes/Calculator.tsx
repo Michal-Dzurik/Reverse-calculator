@@ -2,8 +2,9 @@ import {ArrowUp01, Blend, Divide, Gauge, Puzzle, Radical, Sigma} from "lucide-re
 import {FormEvent, useState} from "react";
 import Select from "../components/form/Select.tsx";
 import Input from "../components/form/Input.tsx";
-import {reverseCalculate} from "../untils/utils.ts";
+import {formatForScreen, reverseCalculate} from "../untils/utils.ts";
 import Checkbox from "../components/form/Checkbox.tsx";
+import { MathComponent } from "mathjax-react";
 
 export default function Calculator() {
     const [complexity, setComplexity] = useState<string>('low');
@@ -18,9 +19,10 @@ export default function Calculator() {
     const [output, setOutput] = useState<string>('');
 
     const handleOnSubmit = function (event: FormEvent<HTMLFormElement>) {
-        event.preventDefault();
-
+        event.preventDefault()
         setOutput(reverseCalculate(number || 0,maxOperands || 2,maxPolynome || 1,mode,complexity,fractions, roots))
+        console.log(output, formatForScreen(output))
+
     }
 
     return (
@@ -28,7 +30,7 @@ export default function Calculator() {
             <h1 className='heading text-3xl mb-5'>Calculator</h1>
             <form onSubmit={handleOnSubmit}>
 
-                <Input label={"Result"} icon={<Sigma/>} hint={"None"} type={'number'} value={number} onChange={(e) => {
+                <Input label={"Result"} icon={<Sigma/>} hint='0' type={'number'} value={number} onChange={(e) => {
                     setNumber(e.target.value.trim() !== '' ? parseFloat(e.target.value) : null);
                 }}/>
 
@@ -66,11 +68,14 @@ export default function Calculator() {
                 }}/>
                 <button type="submit">😋 Gimme that stuff!</button>
 
-                <article className=''>
-                    { output !== '' ? (
-                        output
-                    ) : ''}
-                </article>
+                <div className='w-full text-center'>
+                    <article className='inline-block'>
+                        { output !== '' ? (
+                            <MathComponent tex={formatForScreen(output)} />
+                        ) : ''}
+                    </article>
+                </div>
+
             </form>
         </>
     );

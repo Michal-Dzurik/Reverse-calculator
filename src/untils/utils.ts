@@ -1,4 +1,4 @@
-import { evaluate, bignumber } from "mathjs";
+import { evaluate } from "mathjs";
 const BASE = 100;
 
 const getGCD = (a: number, b: number): number => {
@@ -26,8 +26,8 @@ export const getSign = (numb: number): string => {
 };
 
 export const formatNumber = (numb: number, divide?: number, ignoreFormatting?: boolean): string => {
+    if (divide != null && ignoreFormatting == null) return `${getSign(numb)}${Math.abs(numb)}/${divide}`;
     if (!hasDecimal(numb) || ignoreFormatting || numb === 0) return `${getSign(numb)}${Math.abs(numb)}`;
-    if (divide != null) return `${getSign(numb)}${Math.abs(numb)}/${divide}`;
 
     const sign = getSign(numb);
     const absValue = Math.abs(numb);
@@ -65,7 +65,7 @@ export const reverseCalculate = (
         return "";
     }
 
-    let output = "0";
+    let output = "";
     const multiplier = getComplexityMultiplier(complexity);
     const operandNumber = random(1, maxOperands);
 
@@ -74,8 +74,9 @@ export const reverseCalculate = (
             let numb = random(1, BASE * multiplier - 1);
 
             if (fractions && binaryRandom() === 1) {
-                const fraction = random(1, Math.max(1, (result / 2) * multiplier));
-                output += formatNumber(binaryRandom() ? -numb : numb, fraction);
+                const fraction = random(2, Math.max(2, (result / 2) * multiplier));
+                output += `${formatNumber(binaryRandom() ? -numb : numb, fraction)}`;
+
                 continue;
             }
 
@@ -90,7 +91,7 @@ export const reverseCalculate = (
             output += formatNumber(numb, 0, true);
         }
 
-        const rest = evaluate(`${output} - ${bignumber(result)}`);
+        const rest = evaluate(`${output} - ${result}`);
         output += formatNumber(-rest, 0, true);
     }
 
@@ -101,7 +102,7 @@ export const reverseCalculate = (
 
             if (complexity === "high" && binaryRandom() === 1) {
                 const fraction = random(1, Math.max(1, (result / 2) * multiplier));
-                output += formatNumber(binaryRandom() ? -numb : numb, fraction) + `*x^${polynome}`;
+                output +=  + `(${formatNumber(binaryRandom() ? -numb : numb, fraction)})x^${polynome}`;
                 continue;
             }
 
@@ -113,7 +114,7 @@ export const reverseCalculate = (
             }
 
             if (binaryRandom() === 1) numb = -numb;
-            output += formatNumber(numb) + `*x^${polynome}`;
+            output +=`${formatNumber(numb)}x^${polynome}`;
         }
 
         try {
@@ -126,5 +127,13 @@ export const reverseCalculate = (
         }
     }
 
+    output = output.trim() == '' ? '0' : output;
+
+    if (mode == 'numbers' && evaluate(output) != result) return reverseCalculate(result,maxOperands,maxOperands,mode,complexity,fractions,roots);
     return output;
 };
+
+export const formatForScreen = (equation: string): string => {
+    return equation.replace(/\^\((.*?)\)/g, '^{$1}')
+        .replace(/(\d+)\/(\d+)/g, '{$1 \\over $2}');
+}
